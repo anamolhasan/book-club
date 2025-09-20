@@ -44,6 +44,52 @@ async function run() {
         }
     })
 
+    // get all books (GET)
+    app.get('/books', async(req, res) => {
+        const {page, limit, genre, minYear, maxYear, author, minPrice, maxPrice, sortBy, order, search} = req.query
+        try {
+
+            const currentPage = Math.max(1, parseInt(page) || 1)
+            const perPage = parseInt(limit || 10)
+            const skip = (currentPage - 1) * perPage
+
+            const filter = {};
+
+            if(search){
+                filter.$or = [
+                     {title: {$regex:search, $option:'i'}},
+                     {description: {$regex:search, $option:'i'}}
+                ]
+            }
+
+            if(genre) filter.genre = genre
+
+            if(minYear || maxYear){
+                filter.publishedYear = {
+                    ...(minYear && {$get:parseInt(minYear)}),
+                    ...(maxYear && {$lte:parseInt(maxYear)})
+                }
+            }
+
+            if(author) filter.author = author
+
+            if(minPrice || maxPrice) {
+                filter.price = {
+                    ...(minPrice && {$gte: parseFloat(minPrice)}),
+                    ...(maxPrice && {$lte: parseFloat(maxPrice)})
+                }
+            }
+
+            const sortOptions = {[sortBy || 'title']: order === 'desc' ? -1 : 1}
+
+            const [books, totalBooks] = await Promise.all([booksCollection.find(filter).sort(sortOptions).skip(skip).limit(perPage).toArray(), booksCollection.countDocuments(filter)])
+
+            // const books = await booksCollection.find(filter).toArray()
+            res.status(201).json({books, totalBooks, currentPage, totalPages: Math.ceil(totalBooks / perPage)})
+        } catch (error) {
+            res.status(500).json({error:error.message})
+        }
+    })
 
 
 
