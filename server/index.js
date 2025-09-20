@@ -104,6 +104,27 @@ async function run() {
         }
     })
 
+    // update a book (PUT)
+    app.put('/books/:id', async(req, res) => {
+        try {
+            const updateBook = await booksCollection.updateOne({_id: new ObjectId(req.params.id)}, {$set: req.body})
+
+            res.json(updateBook)
+        } catch (error) {
+             res.status(500).json({error:error.message}) 
+        }
+    })
+
+    // delete a book (DELETE)
+    app.delete('/books/:id', async(req, res) => {
+        try {
+            await booksCollection.deleteOne({_id: new ObjectId(req.params.id)})
+            res.json({message: 'Book Deleted'})
+        } catch (error) {
+            res.status(500).json({error:error.message}) 
+        }
+    })
+
 
 
     // Send a ping to confirm a successful connection
