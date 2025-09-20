@@ -28,14 +28,21 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    // connect to mongodb
+    const db = client.db('book-management-system')
+    const booksCollection = db.collection('books')
 
 
-
-
-
-
-
-
+    // create a book (POST)
+    app.post('/books', async(req, res) => {
+        const bookData = req.body
+        try {
+            const book = await booksCollection.insertOne(bookData)
+            res.status(201).json(book)
+        } catch (error) {
+            res.status(500).json({error: error.message})
+        }
+    })
 
 
 
