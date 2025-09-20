@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 require('dotenv').config()
 const cors = require('cors')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 3000
 
 // middleware
@@ -88,6 +88,19 @@ async function run() {
             res.status(201).json({books, totalBooks, currentPage, totalPages: Math.ceil(totalBooks / perPage)})
         } catch (error) {
             res.status(500).json({error:error.message})
+        }
+    })
+
+    // get book by ID (GET)
+    app.get('/books/:id', async(req, res) => {
+        const bookId = req.params.id
+        try {
+            const book = await booksCollection.findOne({_id: new ObjectId(bookId)})
+            if(!book) return res.status(404).json({message: 'Book not found!'})
+
+            res.json(book)
+        } catch (error) {
+            res.status(500).json({error:error.message}) 
         }
     })
 
