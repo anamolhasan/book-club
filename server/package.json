@@ -1,5 +1,5 @@
 {
-  "name": "book-management-server",
+  "name": "book-club-server",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

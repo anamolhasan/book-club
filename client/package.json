@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "book-club-client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,6 +9,10 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "keywords": [],
+  "author": "anamol hasan",
+  "license": "ISC",
+  "description": "book management system",
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
     "react": "^19.1.1",
