@@ -1,14 +1,13 @@
-const express = require('express')
-const app = express()
-require('dotenv').config()
-const cors = require('cors')
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const port = process.env.PORT || 3000
+const express = require("express");
+const app = express();
+require("dotenv").config();
+const cors = require("cors");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const port = process.env.PORT || 3000;
 
 // middleware
-app.use(cors())
-app.use(express.json())
-
+app.use(cors());
+app.use(express.json());
 
 // connect mongodb
 
@@ -20,7 +19,7 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 async function run() {
@@ -29,18 +28,74 @@ async function run() {
     await client.connect();
 
     // connect to mongodb
-    const db = client.db('book-club-system')
-    const booksCollection = db.collection('books')
+    const db = client.db("book-management-system");
+    const booksCollection = db.collection("books");
+
+    app.post("/books", async (req, res) => {
+      const bookData = req.body;
+      try {
+        const book = await booksCollection.insertOne(bookData);
+        res.status(201).json({ message: "Book Insterted successfully!", book });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    // get all books (GET)
+    app.get("/books", async (req, res) => {
+      const {
+        page,
+        limit,
+        genre,
+        minYear,
+        maxYear,
+        minPrice,
+        maxPrice,
+        author,
+        sortBy,
+        order,
+        search,
+      } = req.query;
+      try {
+
+        const currentPage = Math.max(1, parseInt(page) || 1)
+        const perPage = parseInt(limit) || 10
+        const skip = (currentPage - 1) * perPage
 
 
-    
+        const filter = {}
+
+        if(search){
+          filter.$or = [
+            {title: {$regex: search, $options: 'i'}},
+            {description: {$regex: search, $options: 'i'}}
+          ]
+        }
+
+        if(genre) filter.genre = genre
+
+        if(minYear || maxYear) {
+          filter.publishedYear = {
+            ...(minYear && {$gte: parseInt(minYear)}),
+            ...(maxYear && {$lte: parseInt(maxYear)})
+          }
+        }
 
 
 
-    
+        
+        const books = await booksCollection.find().toArray();
+        res.status(201).json({ books });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
@@ -48,16 +103,13 @@ async function run() {
 }
 run().catch(console.dir);
 
-
-
-app.get('/', (req, res) => {
-  res.send('Welcome to Book Management API!')
-})
+app.get("/", (req, res) => {
+  res.send("Welcome to Book Management API!");
+});
 
 app.listen(port, () => {
-  console.log(`Server is listening on port http://localhost:${port}`)
-})
-
+  console.log(`Server is listening on port http://localhost:${port}`);
+});
 
 // admin
 // 5CUbTmF3tRBu2DfF
