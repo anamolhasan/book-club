@@ -81,15 +81,42 @@ async function run() {
           }
         }
 
+        if(author) filter.author = author
+
+        if(minPrice || maxPrice) {
+          filter.price={
+            ...(minPrice && {$gte: parseFloat(minPrice)}),
+            ...(maxPrice && {$lte: parseFloat(maxPrice)})
+          }
+        }
+
+        const sortOptions = { [sortBy || 'title']: order === 'desc' ? -1 : 1}
+
+        const [books, totalBooks] = await Promise.all([booksCollection.find(filter).sort(sortOptions).skip(skip).limit(perPage).toArray(), booksCollection.countDocuments(filter)])
 
 
-        
-        const books = await booksCollection.find().toArray();
-        res.status(201).json({ books });
+
+        // const books = await booksCollection.find().toArray();
+        res.status(201).json({ books, totalBooks, currentPage, totalPages: Math.ceil(totalBooks / perPage) });
       } catch (error) {
         res.status(500).json({ error: error.message });
       }
     });
+
+
+    app.get('/books/:id', async(req, res) => {
+      const bookId = req.params.id
+
+      try {
+        const book = await booksCollection.findOne({_id: new ObjectId(bookId)})
+        if(!book) return res.status(404).json({message: 'Book not found!'})
+          res.json(book)
+      } catch (error) {
+        res.status(500).json({error: error.message})
+      }
+    })
+
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
