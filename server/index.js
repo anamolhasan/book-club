@@ -103,7 +103,7 @@ async function run() {
       }
     });
 
-
+    // get book by ID (GET)
     app.get('/books/:id', async(req, res) => {
       const bookId = req.params.id
 
@@ -111,6 +111,27 @@ async function run() {
         const book = await booksCollection.findOne({_id: new ObjectId(bookId)})
         if(!book) return res.status(404).json({message: 'Book not found!'})
           res.json(book)
+      } catch (error) {
+        res.status(500).json({error: error.message})
+      }
+    })
+
+    // update a book (PUT)
+    app.put('/books/:id', async(req, res) => {
+      try {
+        const updateBook = await booksCollection.updateOne({_id: new ObjectId(req.params.id)}, {$set: req.body})
+
+        res.json(updateBook)
+      } catch (error) {
+        res.status(500).json({error: error.message})
+      }
+    })
+
+    // delete a book (DELETE)
+    app.delete('/books/:id', async(req, res) => {
+      try {
+        await booksCollection.deleteOne({_id: new ObjectId(req.params.id)})
+        res.json({message:"Book Deleted"})
       } catch (error) {
         res.status(500).json({error: error.message})
       }
