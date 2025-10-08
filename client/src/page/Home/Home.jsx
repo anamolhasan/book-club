@@ -5,7 +5,7 @@ import Shop from '../shop/Shop'
 
 const Home = () => {
   const {books, currentBooks, loading, error} = useBooks()
-  console.log(books)
+  // console.log(books)
   return (
     <>
       <Hero />
