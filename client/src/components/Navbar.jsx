@@ -11,11 +11,12 @@ const Navbar = () => {
     {to: '/', label: 'Home'},
     {to: '/books', label: 'Shop'},
     {to: '/ebooks', label: 'Ebooks'},
+    {to: '/book/add', label: 'Add Book'},
     {to: '/membership', label: 'Membership'},
-    {to: '/books/add', label: 'Add Book'}
+    {to: '/join-community', label: 'Join Community'},
   ]
   return (
-    <nav className='bg-white fixed w-full top-0 z-50 py-4'>
+    <nav className='bg-gray-300 fixed w-full top-0 z-50 py-4 '>
        <div className='container mx-auto px-4'>
         <div className='flex items-center justify-between'>
              {/* Logo */}

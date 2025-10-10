@@ -74,7 +74,7 @@ const Shop = () => {
         />
 
         {/* Add sorting controls */}
-        <div className="p-4 flex justify-end font-bold">
+        <div className="p-4 flex justify-end font-medium">
           <SortBooks
             currentSort={{
               sortBy: filters.sortBy,

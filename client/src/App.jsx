@@ -9,7 +9,7 @@ function App() {
     <>
       <BookProvider>
         <Navbar />
-        <main className="min-h-[calc(100vh-100px)] ">
+        <main className="min-h-[calc(100vh-100px)] mt-16">
           <Outlet />
         </main>
         <Footer />
